@@ -47,53 +47,6 @@ flowchart TD
 
 ---
 
-## 📚 Syllabus Grounding & Mathematical Foundations
-
-### 1. Text Normalization & Orthographic Sanitization
-- **Elongated Character Normalization**: Reduces character sequences repeated $\ge 3$ times down to 1 or 2 while strictly preserving legitimate English double-letter words (e.g., `good`, `sweet`, `look`, `coffee`, `tool`, `speed`).
-- **Punctuation Abuse Mitigation**: Collapses excessive exclamation, question, and symbol clusters (e.g., `!!!!!` $\to$ `!`, `???` $\to$ `?`) and computes an orthographic noise count.
-- **Leetspeak Translation**: Decodes numeric and symbolic character substitutions commonly employed to evade keyword moderation filters (e.g., `b3st` $\to$ `best`, `gr8` $\to$ `great`, `100%` $\to$ `100 percent`, `pr0duct` $\to$ `product`).
-- **Stylometric Case Profiling**: Measures the uppercase character ratio to flag shout-case promotional hysteria.
-
----
-
-### 2. Penn Treebank POS Distribution Profiling
-Authentic product reviews are anchored in concrete nouns describing product features and action verbs describing functionality. Conversely, incentivized and promotional spam over-indexes on descriptive adjectives and superlatives.
-
-- **Modifier Tags**: Adjectives (`JJ`, `JJR`, `JJS`) + Adverbs (`RB`, `RBR`, `RBS`)
-- **Content Tags**: Nouns (`NN`, `NNS`, `NNP`, `NNPS`) + Verbs (`VB`, `VBD`, `VBG`, `VBN`, `VBP`, `VBZ`)
-- **Modifier-to-Content Ratio**:
-  $$\text{Ratio} = \frac{Count(JJ) + Count(RB)}{Count(NN) + Count(VB) + 10^{-5}}$$
-  - *Normal Human Baseline*: $0.25 - 0.55$
-  - *Promotional Spam Signature*: $> 0.65$ (Superlative Flooding)
-- **Superlative Density**:
-  $$\text{Superlative Density} = \frac{Count(JJS) + Count(RBS)}{TotalTokens + 10^{-5}}$$
-- **Lexical Diversity (Type-Token Ratio & Hapax Legomena)**:
-  $$\text{TTR} = \frac{|\text{Unique Tokens}|}{|\text{Total Tokens}|}, \quad \text{Hapax Ratio} = \frac{|\text{Tokens occurring exactly once}|}{|\text{Total Tokens}|}$$
-  - Repetitive bot templates exhibit severe vocabulary compression ($\text{TTR} < 0.45$).
-
----
-
-### 3. N-Gram Language Modeling & Smoothed Perplexity Scoring
-ReviewRadar trains Bigram ($N=2$) and Trigram ($N=3$) language models over an authentic multi-category e-commerce reference corpus (Electronics, Appliances, Footwear, Tools, Home).
-
-#### Laplace (Add-$\alpha$) Smoothing
-$$P_{\text{Laplace}}(w_i \mid w_{i-1}) = \frac{C(w_{i-1}, w_i) + \alpha}{C(w_{i-1}) + \alpha \cdot |V|}$$
-
-#### Good-Turing Smoothing with Katz Unigram Backoff
-For observed n-grams with frequency $r$, the adjusted count $r^*$ is derived from the frequency of frequencies $N_r = |\{ n\text{-gram} : C(n\text{-gram}) = r\}|$:
-$$r^* = (r + 1) \frac{N_{r+1}}{N_r}$$
-Unseen n-gram probability mass:
-$$P_0 = \frac{N_1}{N_{\text{total}}}$$
-For unseen transitions under context $c$, mass $P_0$ is distributed proportional to target unigram probabilities, ensuring $\sum_{w \in V} P(w \mid c) = 1.0$.
-
-#### Cross-Entropy & Perplexity
-$$\text{Cross-Entropy } H(W) = -\frac{1}{M} \sum_{i=1}^M \ln P(w_i \mid \text{context}_i)$$
-$$\text{Perplexity } PP(W) = \exp\left( H(W) \right)$$
-
-- **Statistical Anomaly Interpretation**:
-  - **Unnaturally Low Perplexity ($PP < 18.0$)**: Indicates rigid, canned bot templates repeating formulaic bigrams.
-  - **Erratic Perplexity Spikes ($PP > 400.0$ or High Sentence Variance)**: Indicates keyword salad, randomized gibberish, or machine-translated spam.
 
 ---
 
@@ -171,47 +124,6 @@ review-radar/
 
 ---
 
-## 🚀 Quick Start Guide
-
-### 1. Installation & Environment Setup
-
-```bash
-# Clone repository
-git clone https://github.com/your-username/review-radar.git
-cd review-radar
-
-# Create and activate Python virtual environment
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Configure API Keys (Optional)
-
-Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-```
-Edit `.env` to include your Google Gemini or OpenAI API key:
-```ini
-GEMINI_API_KEY=your_gemini_api_key_here
-DEFAULT_LLM_PROVIDER=gemini
-```
-*(Note: If no API key is set, ReviewRadar seamlessly operates using the built-in deterministic Offline Heuristic Engine).*
-
----
-
-### 3. Launch the Interactive Streamlit Web Dashboard
-
-```bash
-streamlit run app/app.py
-```
-Open your browser at `http://localhost:8501`.
 
 #### Features in Dashboard:
 1. **🔍 Single Review Inspector**: Test sample presets or custom reviews with live color-coded verdict banners, confidence meters, risk level indicators, and sentiment summaries.
@@ -268,20 +180,7 @@ pytest --cov=src --cov-report=term-missing
 
 ---
 
-## 📜 Academic Rubric Compliance
 
-| Rubric Requirement | Implementation Detail | Status |
-| :--- | :--- | :---: |
-| **Tokenization & Sentence Segmentation** | Modular NLTK & regex segmenter in `normalizer.py` | ✅ Full |
-| **Rule-Based Spelling Normalization** | Repeated character reduction, punctuation abuse suppression, leetspeak decoding in `normalizer.py` | ✅ Full |
-| **Penn Treebank POS Distribution** | Tagging, grouping `(JJ, RB)` vs `(NN, VB)`, Modifier-to-Content Ratio in `pos_profiler.py` | ✅ Full |
-| **N-Gram Language Model & Smoothing** | Bigram/Trigram models with Laplace (Add-1) and Good-Turing smoothing in `ngrams_perplexity.py` | ✅ Full |
-| **Perplexity Anomaly Detection** | Flat bot template ($PP < 18$) vs erratic spam spike ($PP > 400$) in `ngrams_perplexity.py` | ✅ Full |
-| **Meaningful LLM Integration** | Expert Fraud Analyst interpreting statistical footprints in `src/llm/client.py` | ✅ Full |
-| **Strict JSON & Schema Validation** | Pydantic v2 schemas (`FraudVerdict`, `StatisticalEvidenceItem`, `ProductSentiment`) in `structured_parser.py` | ✅ Full |
-| **API Resilience & Error Handling** | Exponential backoff with jitter + Offline Deterministic Engine in `client.py` | ✅ Full |
-| **Interactive Streamlit Web Dashboard** | Multi-tab UI with Plotly charts, single/batch modes, and algorithm lab in `app/app.py` | ✅ Full |
-| **Repository Structure & Documentation** | Strict directory layout, unit tests, and GitHub-ready README | ✅ Full |
 
 ---
 
