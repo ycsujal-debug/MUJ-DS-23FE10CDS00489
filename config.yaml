@@ -1,0 +1,54 @@
+# ReviewRadar Configuration File
+classical_nlp:
+  normalizer:
+    max_repeated_chars: 2
+    shout_case_threshold: 0.35
+    leetspeak_dict:
+      'b3st': 'best'
+      'gr8': 'great'
+      'g00d': 'good'
+      'f4st': 'fast'
+      'l0v3': 'love'
+      'l0ve': 'love'
+      'p00r': 'poor'
+      'w0rth': 'worth'
+      'd0pe': 'dope'
+      'sh1t': 'shit'
+      'bu11shit': 'bullshit'
+      '100%': '100 percent'
+      'a++': 'a plus plus'
+      '5star': 'five star'
+      '5stars': 'five stars'
+      '1star': 'one star'
+      'rec0mmend': 'recommend'
+      'am4zing': 'amazing'
+      'aw3some': 'awesome'
+      'che4p': 'cheap'
+      'pr0duct': 'product'
+      'b0t': 'bot'
+  ngrams:
+    default_n: 2
+    default_smoothing: 'laplace'
+    laplace_alpha: 1.0
+    low_perplexity_threshold: 18.0
+    high_perplexity_threshold: 400.0
+    variance_threshold: 4000.0
+  pos_profiler:
+    promotional_modifier_ratio_threshold: 0.65
+    bot_modifier_ratio_threshold: 0.12
+    low_lexical_diversity_threshold: 0.45
+    superlative_density_threshold: 0.08
+
+llm:
+  default_provider: 'gemini'
+  gemini_model: 'gemini-1.5-flash'
+  openai_model: 'gpt-4o-mini'
+  temperature: 0.1
+  max_retries: 3
+  timeout_seconds: 30
+  backoff_factor: 2.0
+
+app:
+  title: 'ReviewRadar: E-Commerce Fake Review and Bot Detector'
+  description: 'Forensic NLP Pipeline combining Classical Statistics and LLM Analysis'
+  version: '1.0.0'

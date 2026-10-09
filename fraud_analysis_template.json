@@ -1,0 +1,65 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FraudVerdict",
+  "type": "object",
+  "properties": {
+    "classification": {
+      "type": "string",
+      "enum": ["GENUINE", "MACHINE_GENERATED_BOT", "INCENTIVIZED_SPAM"],
+      "description": "Final forensic verdict on the authenticity of the review."
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence of the classification from 0.0 (uncertain) to 1.0 (certain)."
+    },
+    "fraud_risk_level": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "description": "Operational risk level for e-commerce moderation queues."
+    },
+    "linguistic_explanation": {
+      "type": "string",
+      "description": "Thorough forensic rationale explaining how the classical NLP statistics (POS ratio, perplexity, lexical diversity, normalization flags) lead to this verdict."
+    },
+    "statistical_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric_name": { "type": "string" },
+          "observed_value": { "type": "string" },
+          "baseline_range": { "type": "string" },
+          "interpretation": { "type": "string" }
+        },
+        "required": ["metric_name", "observed_value", "baseline_range", "interpretation"]
+      },
+      "description": "Concrete statistical metrics cited from the classical engine."
+    },
+    "product_sentiment": {
+      "type": "object",
+      "properties": {
+        "sentiment": { "type": "string", "enum": ["POSITIVE", "NEGATIVE", "NEUTRAL", "MIXED", "NOT_APPLICABLE"] },
+        "sentiment_score": { "type": "number", "minimum": -1.0, "maximum": 1.0 },
+        "key_features_mentioned": { "type": "array", "items": { "type": "string" } },
+        "is_genuine_feedback": { "type": "boolean" }
+      },
+      "required": ["sentiment", "sentiment_score", "key_features_mentioned", "is_genuine_feedback"]
+    },
+    "anomaly_flags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of specific statistical anomaly flags triggered."
+    }
+  },
+  "required": [
+    "classification",
+    "confidence_score",
+    "fraud_risk_level",
+    "linguistic_explanation",
+    "statistical_evidence",
+    "product_sentiment",
+    "anomaly_flags"
+  ]
+}
